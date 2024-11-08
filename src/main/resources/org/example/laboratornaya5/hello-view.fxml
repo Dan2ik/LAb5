@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.laboratornaya5.HelloController">
+  <!-- Основная область для отображения объектов -->
+  <Canvas fx:id="canvas" height="400" layoutX="7.0" layoutY="14.0" width="600" />
+
+  <!-- Кнопки для управления симуляцией -->
+  <Button fx:id="startButton" layoutX="72.0" layoutY="414.0" onAction="#startSimulation" text="Start Simulation (B)" />
+  <Button fx:id="stopButton" layoutX="267.0" layoutY="414.0" onAction="#stopSimulation" text="Stop Simulation (E)" />
+
+  <!-- Текст для отображения времени симуляции -->
+  <Text fx:id="timeText" layoutX="50" layoutY="470" text="Time: 0s" visible="false" />
+
+  <!-- Кнопка для скрытия/показа времени симуляции -->
+  <Button fx:id="toggleTimeButton" layoutX="465.0" layoutY="414.0" onAction="#toggleTimeVisibility" text="Toggle Time (T)" />
+   <Text layoutX="208.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Капитальный" wrappingWidth="154.076171875">
+      <font>
+         <Font size="24.0" />
+      </font>
+   </Text>
+   <Text layoutX="418.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Деревянный">
+      <font>
+         <Font size="24.0" />
+      </font>
+   </Text>
+   <Text layoutX="50.0" layoutY="95.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Период">
+      <font>
+         <Font size="20.0" />
+      </font>
+   </Text>
+   <Text layoutX="50.0" layoutY="163.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Вероятность" wrappingWidth="131.666015625">
+      <font>
+         <Font size="20.0" />
+      </font>
+   </Text>
+   <TextField fx:id="PeriodC" layoutX="211.0" layoutY="75.0" />
+   <TextField fx:id="PeriodW" layoutX="418.0" layoutY="74.0" />
+   <TextField fx:id="chanceC" layoutX="211.0" layoutY="142.0" />
+   <TextField fx:id="ChanceW" layoutX="418.0" layoutY="142.0" />
+</AnchorPane>
