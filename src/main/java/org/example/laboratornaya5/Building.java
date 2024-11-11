@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public abstract class Building implements IBehaviour {
     private String id;
-    public Boolean type;
     private long birthTime;
 
     public Building(long birthTime) {
@@ -15,40 +14,42 @@ public abstract class Building implements IBehaviour {
     public String getId() {
         return id;
     }
-    public Long getBirthTime(){
+
+    public long getBirthTime() {
         return birthTime;
     }
+
+    public abstract boolean isTypeCapital();  // Абстрактный метод для определения типа здания
 }
 
 class Capital extends Building {
     public Capital(long birthTime) {
         super(birthTime);
-        this.type = true;
     }
 
     @Override
     public void update(long time) {
-
+        // Реализация логики обновления для капитального дома
     }
 
     @Override
     public boolean isTypeCapital() {
-        return false;
+        return true;  // Капитальный дом
     }
 }
+
 class Wooden extends Building {
     public Wooden(long birthTime) {
         super(birthTime);
-        this.type = false;
     }
 
     @Override
     public void update(long time) {
-
+        // Реализация логики обновления для деревянного дома
     }
 
     @Override
     public boolean isTypeCapital() {
-        return false;
+        return false;  // Деревянный дом
     }
 }

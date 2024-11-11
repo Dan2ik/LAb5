@@ -21,33 +21,40 @@ public class Habitat {
     private long lastCapitalGeneratedTime = 0; // Время последней генерации капитального дома
     private long lastWoodenGeneratedTime = 0; // Время последней генерации деревянного дома
 
+    // Конструктор с инициализацией параметров
     public Habitat(int width, int height, int N1, int N2, double P1, double P2) {
         this.width = width;
         this.height = height;
-        this.buildings = new Vector<>();
-        this.uniqueIds = new HashSet<>();
-        this.birthTimeMap = new HashMap<>();
-        this.random = new Random();
         this.N1 = N1;
         this.N2 = N2;
         this.P1 = P1;
         this.P2 = P2;
+        this.buildings = new Vector<>();
+        this.uniqueIds = new HashSet<>();
+        this.birthTimeMap = new HashMap<>();
+        this.random = new Random();
     }
 
     public void update(long elapsedTime) {
         // Проверка периода и вероятности для капитального дома
         if (elapsedTime - lastCapitalGeneratedTime >= N1) {
+            System.out.println("Проверка генерации капитального дома: прошло " + (elapsedTime - lastCapitalGeneratedTime) + " секунд");
             if (random.nextDouble() < P1) {
                 generateBuilding(new Capital(elapsedTime));
                 lastCapitalGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
+            } else {
+                System.out.println("Капитальный дом не сгенерирован по вероятности P1 = " + P1);
             }
         }
 
         // Проверка периода и вероятности для деревянного дома
         if (elapsedTime - lastWoodenGeneratedTime >= N2) {
+            System.out.println("Проверка генерации деревянного дома: прошло " + (elapsedTime - lastWoodenGeneratedTime) + " секунд");
             if (random.nextDouble() < P2) {
                 generateBuilding(new Wooden(elapsedTime));
                 lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации деревянного дома
+            } else {
+                System.out.println("Деревянный дом не сгенерирован по вероятности P2 = " + P2);
             }
         }
     }
@@ -56,23 +63,35 @@ public class Habitat {
         if (uniqueIds.add(building.getId())) {
             buildings.add(building);
             birthTimeMap.put(building.getBirthTime(), building);
-            // Здесь можно добавить код для визуализации объекта
             System.out.println("Generated " + (building.isTypeCapital() ? "Capital" : "Wooden") + " building at time " + building.getBirthTime());
         }
     }
 
-    public static void main(String[] args) {
-        Habitat habitat = new Habitat(100, 100, 5, 10, 0.5, 0.3);
+    // Метод для подсчета общего количества зданий
+    public int getBuildingCount() {
+        return buildings.size();
+    }
 
-        // Симуляция обновления каждые 1 секунду
-        for (long time = 0; time < 100; time++) {
-            habitat.update(time);
-            try {
-                Thread.sleep(1000); // Пауза в 1 секунду
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    // Метод для подсчета количества капитальных домов
+    public int getCapitalBuildingCount() {
+        int count = 0;
+        for (Building building : buildings) {
+            if (building.isTypeCapital()) {
+                count++;
             }
         }
+        return count;
+    }
+
+    // Метод для подсчета количества деревянных домов
+    public int getWoodenBuildingCount() {
+        int count = 0;
+        for (Building building : buildings) {
+            if (!building.isTypeCapital()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     // Геттеры и сеттеры для N1, N2, P1 и P2

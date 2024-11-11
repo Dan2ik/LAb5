@@ -42,6 +42,6 @@
    <TextField fx:id="PeriodW" layoutX="418.0" layoutY="74.0" />
    <TextField fx:id="ChanceC" layoutX="211.0" layoutY="142.0" />
    <TextField fx:id="ChanceW" layoutX="418.0" layoutY="142.0" />
-   <Label layoutX="271.0" layoutY="206.0" text="0" />
-   <Label layoutX="479.0" layoutY="206.0" text="0" />
+   <Label fx:id="LabelC" layoutX="271.0" layoutY="206.0" text="0" />
+   <Label fx:id="LabelW" layoutX="479.0" layoutY="206.0" text="0" />
 </AnchorPane>
