@@ -30,6 +30,11 @@ class Capital extends Building {
     public void update(long time) {
 
     }
+
+    @Override
+    public boolean isTypeCapital() {
+        return false;
+    }
 }
 class Wooden extends Building {
     public Wooden(long birthTime) {
@@ -40,5 +45,10 @@ class Wooden extends Building {
     @Override
     public void update(long time) {
 
+    }
+
+    @Override
+    public boolean isTypeCapital() {
+        return false;
     }
 }

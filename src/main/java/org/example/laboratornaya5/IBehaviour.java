@@ -4,4 +4,5 @@ public interface IBehaviour {
     // Метод для обновления состояния объекта
     void update(long time);
 
+    boolean isTypeCapital();
 }

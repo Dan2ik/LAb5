@@ -9,7 +9,6 @@ import javafx.scene.control.TextField;
 
 public class HelloController {
 
-    // Аннотация @FXML используется для связывания компонентов FXML с полями класса
     @FXML
     private Canvas canvas; // Canvas для рисования
 
@@ -22,33 +21,60 @@ public class HelloController {
     @FXML
     private Text timeText; // Текстовый компонент для отображения времени
 
+    @FXML
+    private TextField PeriodC; // Поле для периода капитальных домов
+
+    @FXML
+    private TextField PeriodW; // Поле для периода деревянных домов
+
+    @FXML
+    private TextField ChanceC; // Поле для вероятности капитальных домов
+
+    @FXML
+    private TextField ChanceW; // Поле для вероятности деревянных домов
+
     private AnimationTimer timer; // Таймер для обновления симуляции
     private long startTime; // Время начала симуляции
+    private Habitat habitat; // Экземпляр Habitat для управления зданиями
 
     @FXML
     public void initialize() {
-        // Инициализация таймера и других компонентов
+        // Инициализация таймера
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // Обновление симуляции с учетом прошедшего времени
-                updateSimulation((now - startTime) / 1_000_000_000.0);
+                double elapsedTime = (now - startTime) / 1_000_000_000.0;
+                updateSimulation(elapsedTime);
             }
         };
     }
 
     @FXML
     private void startSimulation() {
-        // Запуск симуляции
-        startTime = System.nanoTime(); // Установка текущего времени как начального
-        timer.start(); // Запуск таймера
+        // Чтение параметров из текстовых полей
+        try {
+            int N1 = Integer.parseInt(PeriodC.getText());
+            int N2 = Integer.parseInt(PeriodW.getText());
+            double P1 = Double.parseDouble(ChanceC.getText());
+            double P2 = Double.parseDouble(ChanceW.getText());
+
+            // Инициализация Habitat с заданными параметрами
+            habitat = new Habitat(100, 100, N1, N2, P1, P2);
+
+            // Запуск таймера
+            startTime = System.nanoTime();
+            timer.start();
+
+        } catch (NumberFormatException e) {
+            System.err.println("Ошибка: Введите корректные числовые значения для периодов и вероятностей.");
+        }
     }
 
     @FXML
     private void stopSimulation() {
         // Остановка симуляции
-        timer.stop(); // Остановка таймера
-        clearSimulation(); // Очистка симуляции
+        timer.stop();
+        clearSimulation();
     }
 
     @FXML
@@ -58,43 +84,24 @@ public class HelloController {
     }
 
     private void updateSimulation(double elapsedTime) {
-        // Логика обновления объектов симуляции
-        timeText.setText(String.format("Time: %.2fs", elapsedTime)); // Обновление текста времени
-        // Отрисовка объектов на canvas (здесь можно добавить логику рисования)
+        // Обновление времени и вызов обновления Habitat
+        timeText.setText(String.format("Time: %.2fs", elapsedTime));
+
+        // Обновление объектов в Habitat
+        if (habitat != null) {
+            habitat.update((long) elapsedTime);
+
+            // Очистка и отрисовка на Canvas
+            canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            // Здесь можно добавить логику для рисования зданий на canvas
+        }
     }
 
     private void clearSimulation() {
         // Очистка объектов после завершения симуляции
-        canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Очистка canvas
-        timeText.setText("Time: 0s"); // Сброс текста времени
-
-    }
-    @FXML
-    private TextField PeriodC;
-    public String getTextPeriodC() {
-// Считываем текст из TextField
-        String inputText = PeriodC.getText();
-        return inputText;
+        if (canvas != null) {
+            canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         }
-    @FXML
-    private TextField PeriodW;
-    public String getTextPeriodW() {
-// Считываем текст из TextField
-        String inputText = PeriodW.getText();
-        return inputText;
-    }
-    @FXML
-    private TextField chanceC;
-    public String getTextchanceC() {
-// Считываем текст из TextField
-        String inputText = chanceC.getText();
-        return inputText;
-    }
-    @FXML
-    private TextField chanceW;
-    public String getTextchanceW() {
-// Считываем текст из TextField
-        String inputText = chanceW.getText();
-        return inputText;
+        timeText.setText("Time: 0s");
     }
 }
