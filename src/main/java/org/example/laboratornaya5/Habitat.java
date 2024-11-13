@@ -39,7 +39,7 @@ public class Habitat {
         // Проверка периода и вероятности для капитального дома
         if (elapsedTime - lastCapitalGeneratedTime >= N1) {
             System.out.println("Проверка генерации капитального дома: прошло " + (elapsedTime - lastCapitalGeneratedTime) + " секунд");
-            if (random.nextDouble() < P1) {  // Генерация с вероятностью P1
+            if (Math.random()*100.0 < P1) {  // Генерация с вероятностью P1
                 generateBuilding(new Capital(elapsedTime));
                 lastCapitalGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
             } else {
@@ -50,11 +50,11 @@ public class Habitat {
         // Проверка периода и вероятности для деревянного дома
         if (elapsedTime - lastWoodenGeneratedTime >= N2) {
             System.out.println("Проверка генерации деревянного дома: прошло " + (elapsedTime - lastWoodenGeneratedTime) + " секунд");
-            if (random.nextDouble() < P2) {  // Генерация с вероятностью P2
+            if (Math.random()*100.0 < P2) {  // Генерация с вероятностью P2
                 generateBuilding(new Wooden(elapsedTime));
                 lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации деревянного дома
             } else {
-                System.out.println("Деревянный дом не сгенерирован по вероятности P2 = " + P2);
+                System.out.println(Math.random()*100.0+" Деревянный дом не сгенерирован по вероятности P2 = " + P2);
             }
         }
     }
