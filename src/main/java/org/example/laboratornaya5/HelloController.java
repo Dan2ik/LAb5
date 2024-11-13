@@ -3,6 +3,7 @@ package org.example.laboratornaya5;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.animation.AnimationTimer;
 import javafx.scene.control.TextField;
@@ -32,7 +33,10 @@ public class HelloController {
 
     @FXML
     private TextField ChanceW; // Поле для вероятности деревянных домов
-
+    @FXML
+    private Label LabelC; // Поле для вероятности деревянных домов
+    @FXML
+    private Label LabelW; // Поле для вероятности деревянных домов
     private AnimationTimer timer; // Таймер для обновления симуляции
     private long startTime; // Время начала симуляции
     private Habitat habitat; // Экземпляр Habitat для управления зданиями
@@ -45,6 +49,9 @@ public class HelloController {
             public void handle(long now) {
                 double elapsedTime = (now - startTime) / 1_000_000_000.0;
                 updateSimulation(elapsedTime);
+                LabelC.setText(String.valueOf(habitat.getCapitalBuildingCount()));
+                LabelW.setText(String.valueOf(habitat.getWoodenBuildingCount()));
+
             }
         };
     }
