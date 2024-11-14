@@ -10,6 +10,7 @@ module org.example.laboratornaya5 {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens org.example.laboratornaya5 to javafx.fxml;
     exports org.example.laboratornaya5;

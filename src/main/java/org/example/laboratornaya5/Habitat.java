@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Vector;
 
 public class Habitat {
+    int i=0;
     private int width;
     private int height;
     private Vector<Building> buildings;
@@ -38,24 +39,26 @@ public class Habitat {
     public void update(long elapsedTime) {
         // Проверка периода и вероятности для капитального дома
         if (elapsedTime - lastCapitalGeneratedTime >= N1) {
-            System.out.println("Проверка генерации капитального дома: прошло " + (elapsedTime - lastCapitalGeneratedTime) + " секунд");
+            i++;
+            System.out.println(i);
             if (Math.random()*100.0 < P1) {  // Генерация с вероятностью P1
                 generateBuilding(new Capital(elapsedTime));
-                lastCapitalGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
+
             } else {
-                System.out.println("Капитальный дом не сгенерирован по вероятности P1 = " + P1);
             }
+            lastCapitalGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
         }
 
         // Проверка периода и вероятности для деревянного дома
         if (elapsedTime - lastWoodenGeneratedTime >= N2) {
-            System.out.println("Проверка генерации деревянного дома: прошло " + (elapsedTime - lastWoodenGeneratedTime) + " секунд");
+
             if (Math.random()*100.0 < P2) {  // Генерация с вероятностью P2
                 generateBuilding(new Wooden(elapsedTime));
                 lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации деревянного дома
             } else {
-                System.out.println(Math.random()*100.0+" Деревянный дом не сгенерирован по вероятности P2 = " + P2);
+
             }
+            lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
         }
     }
     private void generateBuilding(Building building) {
@@ -73,24 +76,24 @@ public class Habitat {
 
     // Метод для подсчета количества капитальных домов
     public int getCapitalBuildingCount() {
-        int count = 0;
+        int Сcount = 0;
         for (Building building : buildings) {
             if (building.isTypeCapital()) {
-                count++;
+                Сcount++;
             }
         }
-        return count;
+        return Сcount;
     }
 
     // Метод для подсчета количества деревянных домов
     public int getWoodenBuildingCount() {
-        int count = 0;
+        int Wcount = 0;
         for (Building building : buildings) {
             if (!building.isTypeCapital()) {
-                count++;
+                Wcount++;
             }
         }
-        return count;
+        return Wcount;
     }
 
     // Геттеры и сеттеры для N1, N2, P1 и P2

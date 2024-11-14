@@ -17,7 +17,7 @@
   <Text fx:id="timeText" layoutX="50" layoutY="470" text="Time: 0s" visible="false" />
 
   <!-- Кнопка для скрытия/показа времени симуляции -->
-  <Button fx:id="toggleTimeButton" layoutX="465.0" layoutY="414.0" onAction="#toggleTimeVisibility" text="Toggle Time (T)" />
+  <Button fx:id="toggleTimeButton" layoutX="465.0" layoutY="414.0" onAction="#toggleTimeVisibility" text="Time (T)" />
    <Text layoutX="208.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Капитальный" wrappingWidth="154.076171875">
       <font>
          <Font size="24.0" />
