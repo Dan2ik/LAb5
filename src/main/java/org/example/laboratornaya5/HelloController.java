@@ -1,45 +1,68 @@
 package org.example.laboratornaya5;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.animation.AnimationTimer;
-import javafx.scene.control.TextField;
+import javafx.scene.text.TextFlow;
+
+import java.util.Optional;
 
 public class HelloController {
+    private boolean running = false;
+    private boolean isPaused;
+    private long pausedTime;
 
     @FXML
-    private Canvas canvas; // Canvas для рисования
+    private Canvas canvas;
 
     @FXML
-    private Button startButton; // Кнопка для запуска симуляции
+    private Button startButton;
 
     @FXML
-    private Button stopButton; // Кнопка для остановки симуляции
+    private Button stopButton;
 
     @FXML
-    private Text timeText; // Текстовый компонент для отображения времени
+    private Text timeText;
 
     @FXML
-    private TextField PeriodC; // Поле для периода капитальных домов
+    private TextField PeriodC;
 
     @FXML
-    private TextField PeriodW; // Поле для периода деревянных домов
+    private TextField PeriodW;
 
     @FXML
-    private TextField ChanceC; // Поле для вероятности капитальных домов
+    private TextField ChanceC;
 
     @FXML
-    private TextField ChanceW; // Поле для вероятности деревянных домов
+    private TextField ChanceW;
+
     @FXML
-    private Label LabelC; // Поле для вероятности деревянных домов
+    private Label LabelC;
+
     @FXML
-    private Label LabelW; // Поле для вероятности деревянных домов
-    private AnimationTimer timer; // Таймер для обновления симуляции
-    private long startTime; // Время начала симуляции
-    private Habitat habitat; // Экземпляр Habitat для управления зданиями
+    private Label LabelW;
+
+    private AnimationTimer timer;
+    private long startTime;
+    private Habitat habitat;
+
+    // Метод для добавления обработчика нажатия клавиш
+    public void addKeyHandler(Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case B -> {
+                    if (!running) startSimulation();
+                }
+                case E -> {
+                    if (running) stopSimulation();
+                }
+                case T -> toggleTimeVisibility();
+            }
+        });
+    }
 
     @FXML
     public void initialize() {
@@ -49,52 +72,105 @@ public class HelloController {
             public void handle(long now) {
                 double elapsedTime = (now - startTime) / 1_000_000_000.0;
                 updateSimulation(elapsedTime);
-                LabelC.setText(String.valueOf(habitat.getCapitalBuildingCount()));
-                LabelW.setText(String.valueOf(habitat.getWoodenBuildingCount()));
+                if (habitat != null) {
+                    LabelC.setText(String.valueOf(habitat.getCapitalBuildingCount()));
+                    LabelW.setText(String.valueOf(habitat.getWoodenBuildingCount()));
+                }
+
 
             }
         };
+
+        // Проверка, что сцена инициализирована и добавление обработчика нажатия клавиш
+        canvas.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                addKeyHandler(newScene);
+            }
+        });
     }
 
     @FXML
     private void startSimulation() {
-        // Чтение параметров из текстовых полей
+
+
         try {
             int N1 = Integer.parseInt(PeriodC.getText());
             int N2 = Integer.parseInt(PeriodW.getText());
             double P1 = Double.parseDouble(ChanceC.getText());
             double P2 = Double.parseDouble(ChanceW.getText());
 
+            if (P1 > 100 || P1 < 0 || P2 > 100 || P2 < 0) {
+                showAlert("Ошибка", "Недопустимое значение шанса",
+                        "Значение шанса должно быть в диапазоне от 0 до 100.");
+                return;
+            }
+
+            if (N1 < 0 || N2 < 0) {
+                showAlert("Ошибка", "Недопустимое значение периода",
+                        "Значение периода должно быть положительным числом.");
+                return;
+            }
+
             // Инициализация Habitat с заданными параметрами
             habitat = new Habitat(100, 100, N1, N2, P1, P2);
+            running = true;
+            startButton.setDisable(true);
+            stopButton.setDisable(false);
 
             // Запуск таймера
             startTime = System.nanoTime();
             timer.start();
 
         } catch (NumberFormatException e) {
-            System.err.println("Ошибка: Введите корректные числовые значения для периодов и вероятностей.");
+            showAlert("Ошибка", "Неверный формат ввода",
+                    "Введите корректные числовые значения для периодов и вероятностей.");
         }
     }
 
+    private void showAlert(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
     @FXML
     private void stopSimulation() {
-        // Остановка симуляции
+        if (showConfirmationDialog(habitat)) {
+            resetSimulation();
+        } else {
+            isPaused = false;
+            startTime = System.nanoTime() - pausedTime;
+        }
+        if (!running) return;
+        running = false;
         timer.stop();
         clearSimulation();
     }
 
+    private void resetSimulation() {
+        running = false;
+        isPaused = false;
+        startButton.setDisable(false);
+        stopButton.setDisable(true);
+
+        LabelC.setText("0");
+        LabelW.setText("0");
+        timeText.setText("Время симуляции: 00:00");
+
+        pausedTime = 0;
+        startTime = 0;
+        habitat = null;  // Сбросим habitat, чтобы начать с чистого состояния
+    }
+
     @FXML
     private void toggleTimeVisibility() {
-        // Переключение видимости текстового компонента времени
         timeText.setVisible(!timeText.isVisible());
     }
 
     private void updateSimulation(double elapsedTime) {
-        // Обновление времени и вызов обновления Habitat
         timeText.setText(String.format("Time: %.2fs", elapsedTime));
 
-        // Обновление объектов в Habitat
         if (habitat != null) {
             habitat.update((long) elapsedTime);
 
@@ -105,10 +181,23 @@ public class HelloController {
     }
 
     private void clearSimulation() {
-        // Очистка объектов после завершения симуляции
         if (canvas != null) {
             canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         }
         timeText.setText("Time: 0s");
+    }
+
+    private boolean showConfirmationDialog(Habitat habitat) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Остановить симуляцию?");
+        TextFlow content = new TextFlow(
+                new Text(String.format("Количество капитальных домов: %d\n", habitat.getCapitalBuildingCount())),
+                new Text(String.format("Количество деревянных домов: %d\n", habitat.getWoodenBuildingCount()))
+        );
+        alert.getDialogPane().setContent(content);
+        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 }

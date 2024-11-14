@@ -44,4 +44,20 @@
    <TextField fx:id="ChanceW" layoutX="418.0" layoutY="142.0" />
    <Label fx:id="LabelC" layoutX="271.0" layoutY="206.0" text="0" />
    <Label fx:id="LabelW" layoutX="479.0" layoutY="206.0" text="0" />
+   <MenuBar layoutX="6.0" layoutY="1.0">
+     <menus>
+       <Menu mnemonicParsing="false" text="меню">
+         <items>
+           <MenuItem mnemonicParsing="false" text="Close" />
+         </items>
+       </Menu>
+       <Menu mnemonicParsing="false" text="панель инстркментов">
+         <items>
+           <MenuItem mnemonicParsing="false" onAction="#startSimulation" text="Start Simulation" />
+               <MenuItem mnemonicParsing="false" onAction="#stopSimulation" text="Stop Simulation" />
+               <MenuItem mnemonicParsing="false" onAction="#toggleTimeVisibility" text="Time" />
+         </items>
+       </Menu>
+     </menus>
+   </MenuBar>
 </AnchorPane>

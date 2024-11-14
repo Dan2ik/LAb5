@@ -20,6 +20,7 @@ public class HelloApplication extends Application {
         primaryStage.show();  // отображаем окно
     }
 
+
     public static void main(String[] args) {
         launch(args);  // Запуск JavaFX-приложения
     }
