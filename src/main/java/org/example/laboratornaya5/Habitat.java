@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Vector;
 
 public class Habitat {
-    int i=0;
     private int width;
     private int height;
     private Vector<Building> buildings;
@@ -19,53 +18,68 @@ public class Habitat {
     private double P1; // Вероятность генерации капитальных домов
     private double P2; // Вероятность генерации деревянных домов
 
+    private long capitalLifespan;  // Время жизни капитальных домов
+    private long woodenLifespan;   // Время жизни деревянных домов
+
     private long lastCapitalGeneratedTime = 0; // Время последней генерации капитального дома
-    private long lastWoodenGeneratedTime = 0; // Время последней генерации деревянного дома
+    private long lastWoodenGeneratedTime = 0;  // Время последней генерации деревянного дома
+    private boolean paused = false;
 
     // Конструктор с инициализацией параметров
-    public Habitat(int width, int height, int N1, int N2, double P1, double P2) {
+    public Habitat(int width, int height, int N1, int N2, double P1, double P2, long capitalLifespan, long woodenLifespan) {
         this.width = width;
         this.height = height;
         this.N1 = N1;
         this.N2 = N2;
         this.P1 = P1;
         this.P2 = P2;
+        this.capitalLifespan = capitalLifespan;
+        this.woodenLifespan = woodenLifespan;
         this.buildings = new Vector<>();
         this.uniqueIds = new HashSet<>();
         this.birthTimeMap = new HashMap<>();
         this.random = new Random();
     }
+    public Vector<Building> getBuildings() {
+        return buildings;
+    }
+    public void togglePause() {
+        paused = !paused;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
 
     public void update(long elapsedTime) {
+        if (paused) return;
+        // Удаление объектов, у которых истек срок жизни
+        buildings.removeIf(building -> !building.isAlive(elapsedTime));
+        birthTimeMap.values().removeIf(building -> !building.isAlive(elapsedTime));
+
         // Проверка периода и вероятности для капитального дома
         if (elapsedTime - lastCapitalGeneratedTime >= N1) {
-            i++;
-            System.out.println(i);
-            if (Math.random()*100.0 < P1) {  // Генерация с вероятностью P1
-                generateBuilding(new Capital(elapsedTime));
-
-            } else {
+            if (Math.random() * 100.0 < P1) {  // Генерация с вероятностью P1
+                generateBuilding(new Capital(elapsedTime, capitalLifespan));
             }
             lastCapitalGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
         }
 
         // Проверка периода и вероятности для деревянного дома
         if (elapsedTime - lastWoodenGeneratedTime >= N2) {
-
-            if (Math.random()*100.0 < P2) {  // Генерация с вероятностью P2
-                generateBuilding(new Wooden(elapsedTime));
-                lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации деревянного дома
-            } else {
-
+            if (Math.random() * 100.0 < P2) {  // Генерация с вероятностью P2
+                generateBuilding(new Wooden(elapsedTime, woodenLifespan));
             }
-            lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации капитального дома
+            lastWoodenGeneratedTime = elapsedTime; // Обновляем время последней генерации деревянного дома
         }
     }
+
     private void generateBuilding(Building building) {
         if (uniqueIds.add(building.getId())) {
             buildings.add(building);
             birthTimeMap.put(building.getBirthTime(), building);
-            System.out.println("Generated " + (building.isTypeCapital() ? "Capital" : "Wooden") + " building at time " + building.getBirthTime());
+            System.out.println("Generated " + (building.isTypeCapital() ? "Capital" : "Wooden") +
+                    " building at time " + building.getBirthTime());
         }
     }
 
@@ -76,27 +90,15 @@ public class Habitat {
 
     // Метод для подсчета количества капитальных домов
     public int getCapitalBuildingCount() {
-        int Сcount = 0;
-        for (Building building : buildings) {
-            if (building.isTypeCapital()) {
-                Сcount++;
-            }
-        }
-        return Сcount;
+        return (int) buildings.stream().filter(Building::isTypeCapital).count();
     }
 
     // Метод для подсчета количества деревянных домов
     public int getWoodenBuildingCount() {
-        int Wcount = 0;
-        for (Building building : buildings) {
-            if (!building.isTypeCapital()) {
-                Wcount++;
-            }
-        }
-        return Wcount;
+        return (int) buildings.stream().filter(building -> !building.isTypeCapital()).count();
     }
 
-    // Геттеры и сеттеры для N1, N2, P1 и P2
+    // Геттеры и сеттеры для N1, N2, P1, P2, времени жизни капитальных и деревянных домов
     public int getN1() {
         return N1;
     }
@@ -127,5 +129,21 @@ public class Habitat {
 
     public void setP2(double P2) {
         this.P2 = P2;
+    }
+
+    public long getCapitalLifespan() {
+        return capitalLifespan;
+    }
+
+    public void setCapitalLifespan(long capitalLifespan) {
+        this.capitalLifespan = capitalLifespan;
+    }
+
+    public long getWoodenLifespan() {
+        return woodenLifespan;
+    }
+
+    public void setWoodenLifespan(long woodenLifespan) {
+        this.woodenLifespan = woodenLifespan;
     }
 }
