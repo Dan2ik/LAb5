@@ -8,7 +8,10 @@ import javafx.scene.text.Text;
 import javafx.animation.AnimationTimer;
 import javafx.scene.text.TextFlow;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 public class HelloController {
     private boolean running = false;
@@ -45,9 +48,17 @@ public class HelloController {
     @FXML
     private Label LabelW;
 
+    @FXML
+    private TextField capitalLifespanField;
+
+    @FXML
+    private TextField woodenLifespanField;
+
+
     private AnimationTimer timer;
     private long startTime;
     private Habitat habitat;
+    private Map<Long, Building> buildingMap = new HashMap<>();
 
     // Метод для добавления обработчика нажатия клавиш
     public void addKeyHandler(Scene scene) {
@@ -60,6 +71,21 @@ public class HelloController {
                     if (running) stopSimulation();
                 }
                 case T -> toggleTimeVisibility();
+                case I -> {
+                    if (running) showConfirmationDialog(habitat);
+                }
+                case P -> {
+                    habitat.togglePause(); // Включаем/выключаем паузу
+                    if (habitat.isPaused()){
+                        showNotification("Уведомление", "Пауза активирована",
+                                "Пауза активирована");
+                    }else {
+                        showNotification("Уведомление", "Пауза активирована",
+                                "Пауза активирована");
+
+                    }
+                    System.out.println("Пауза: " + (habitat.isPaused() ? "Включена" : "Выключена"));
+                }
             }
         });
     }
@@ -77,11 +103,13 @@ public class HelloController {
                     LabelW.setText(String.valueOf(habitat.getWoodenBuildingCount()));
                 }
 
-
+                // Удаляем здания с истекшим временем жизни
+                long currentTime = System.nanoTime();
+                buildingMap.values().removeIf(building -> !building.isAlive(currentTime));
             }
         };
 
-        // Проверка, что сцена инициализирована и добавление обработчика нажатия клавиш
+        // Добавление обработчика нажатия клавиш
         canvas.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 addKeyHandler(newScene);
@@ -91,13 +119,13 @@ public class HelloController {
 
     @FXML
     private void startSimulation() {
-
-
         try {
             int N1 = Integer.parseInt(PeriodC.getText());
             int N2 = Integer.parseInt(PeriodW.getText());
             double P1 = Double.parseDouble(ChanceC.getText());
             double P2 = Double.parseDouble(ChanceW.getText());
+            long capitalLifespan = Long.parseLong(capitalLifespanField.getText());
+            long woodenLifespan = Long.parseLong(woodenLifespanField.getText());
 
             if (P1 > 100 || P1 < 0 || P2 > 100 || P2 < 0) {
                 showAlert("Ошибка", "Недопустимое значение шанса",
@@ -105,14 +133,14 @@ public class HelloController {
                 return;
             }
 
-            if (N1 < 0 || N2 < 0) {
-                showAlert("Ошибка", "Недопустимое значение периода",
-                        "Значение периода должно быть положительным числом.");
+            if (N1 < 0 || N2 < 0 || capitalLifespan <= 0 || woodenLifespan <= 0) {
+                showAlert("Ошибка", "Недопустимое значение периода или времени жизни",
+                        "Значение должно быть положительным числом.");
                 return;
             }
 
             // Инициализация Habitat с заданными параметрами
-            habitat = new Habitat(100, 100, N1, N2, P1, P2);
+            habitat = new Habitat(100, 100, N1, N2, P1, P2, capitalLifespan, woodenLifespan);
             running = true;
             startButton.setDisable(true);
             stopButton.setDisable(false);
@@ -127,6 +155,32 @@ public class HelloController {
         }
     }
 
+    @FXML
+    private void showCurrentObjectsDialog() {
+        if (habitat == null) {
+            System.out.println("Симуляция не запущена.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Текущие объекты");
+        alert.setHeaderText("Список активных объектов");
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Список активных объектов");
+        TextFlow content = new TextFlow(
+                new Text(String.format("Количество капитальных домов: %d\n", habitat.getCapitalBuildingCount())),
+                new Text(String.format("Количество деревянных домов: %d\n", habitat.getWoodenBuildingCount()))
+        );
+        alert.getDialogPane().setContent(content);
+        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+
+
+
+    }
+
+
+
     private void showAlert(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -134,6 +188,7 @@ public class HelloController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     @FXML
     private void stopSimulation() {
         if (showConfirmationDialog(habitat)) {
@@ -146,6 +201,19 @@ public class HelloController {
         running = false;
         timer.stop();
         clearSimulation();
+    }
+    @FXML
+    private void pause() {
+        habitat.togglePause(); // Включаем/выключаем паузу
+        if (habitat.isPaused()){
+            showNotification("Уведомление", "Пауза активирована",
+                    "Пауза активирована");
+        }else {
+            showNotification("Уведомление", "Пауза активирована",
+                    "Пауза активирована");
+
+        }
+        System.out.println("Пауза: " + (habitat.isPaused() ? "Включена" : "Выключена"));
     }
 
     private void resetSimulation() {
@@ -160,7 +228,8 @@ public class HelloController {
 
         pausedTime = 0;
         startTime = 0;
-        habitat = null;  // Сбросим habitat, чтобы начать с чистого состояния
+        habitat = null;
+        buildingMap.clear();  // Очистка активных объектов
     }
 
     @FXML
@@ -199,5 +268,12 @@ public class HelloController {
         alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
+    }
+    private void showNotification(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

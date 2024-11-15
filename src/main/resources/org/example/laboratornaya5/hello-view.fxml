@@ -7,17 +7,17 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.laboratornaya5.HelloController">
   <!-- Основная область для отображения объектов -->
-  <Canvas fx:id="canvas" height="400" layoutX="7.0" layoutY="14.0" width="600" />
+  <Canvas fx:id="canvas" height="400" layoutX="4.0" layoutY="23.0" width="600" />
 
   <!-- Кнопки для управления симуляцией -->
-  <Button fx:id="startButton" layoutX="72.0" layoutY="414.0" onAction="#startSimulation" text="Start Simulation (B)" />
-  <Button fx:id="stopButton" layoutX="267.0" layoutY="414.0" onAction="#stopSimulation" text="Stop Simulation (E)" />
+  <Button fx:id="startButton" layoutX="24.0" layoutY="414.0" onAction="#startSimulation" text="Пуск симуляции (B)" />
+  <Button fx:id="stopButton" layoutX="155.0" layoutY="414.0" onAction="#stopSimulation" text="Остановка симуляции (E)" />
 
   <!-- Текст для отображения времени симуляции -->
   <Text fx:id="timeText" layoutX="50" layoutY="470" text="Time: 0s" visible="false" />
 
   <!-- Кнопка для скрытия/показа времени симуляции -->
-  <Button fx:id="toggleTimeButton" layoutX="465.0" layoutY="414.0" onAction="#toggleTimeVisibility" text="Time (T)" />
+  <Button fx:id="toggleTimeButton" layoutX="317.0" layoutY="414.0" onAction="#toggleTimeVisibility" text="Время (T)" />
    <Text layoutX="208.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Капитальный" wrappingWidth="154.076171875">
       <font>
          <Font size="24.0" />
@@ -42,9 +42,15 @@
    <TextField fx:id="PeriodW" layoutX="418.0" layoutY="74.0" />
    <TextField fx:id="ChanceC" layoutX="211.0" layoutY="142.0" />
    <TextField fx:id="ChanceW" layoutX="418.0" layoutY="142.0" />
-   <Label fx:id="LabelC" layoutX="271.0" layoutY="206.0" text="0" />
-   <Label fx:id="LabelW" layoutX="479.0" layoutY="206.0" text="0" />
-   <MenuBar layoutX="6.0" layoutY="1.0">
+   <Label fx:id="LabelC" layoutX="260.0" layoutY="237.0" text="0">
+      <font>
+         <Font size="20.0" />
+      </font></Label>
+   <Label fx:id="LabelW" layoutX="481.0" layoutY="243.0" text="0">
+      <font>
+         <Font size="20.0" />
+      </font></Label>
+   <MenuBar layoutY="1.0" prefHeight="25.0" prefWidth="203.0">
      <menus>
        <Menu mnemonicParsing="false" text="меню">
          <items>
@@ -56,8 +62,24 @@
            <MenuItem mnemonicParsing="false" onAction="#startSimulation" text="Start Simulation" />
                <MenuItem mnemonicParsing="false" onAction="#stopSimulation" text="Stop Simulation" />
                <MenuItem mnemonicParsing="false" onAction="#toggleTimeVisibility" text="Time" />
+               <MenuItem mnemonicParsing="false" onAction="#showCurrentObjectsDialog" text="information" />
+               <MenuItem mnemonicParsing="false" onAction="#pause" text="Pause" />
          </items>
        </Menu>
      </menus>
    </MenuBar>
+   <Text layoutX="50.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Кол-во домов">
+      <font>
+         <Font size="20.0" />
+      </font>
+   </Text>
+   <Text layoutX="54.0" layoutY="217.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Время жизни">
+      <font>
+         <Font size="20.0" />
+      </font>
+   </Text>
+   <TextField fx:id="capitalLifespanField" layoutX="211.0" layoutY="196.0" />
+   <TextField fx:id="woodenLifespanField" layoutX="420.0" layoutY="196.0" />
+   <Button layoutX="392.0" layoutY="414.0" mnemonicParsing="false" onAction="#showCurrentObjectsDialog" text="Информация (I)" />
+   <Button layoutX="501.0" layoutY="414.0" mnemonicParsing="false" onAction="#pause" text="Пауза (P)" />
 </AnchorPane>
