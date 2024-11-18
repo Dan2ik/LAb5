@@ -57,7 +57,7 @@ class Wooden extends Building {
 
     @Override
     public void update(long time) {
-        // Реализация логики обновления kjдля деревянного дома
+        // Реализация логики обновления для деревянного дома
     }
 
     @Override
